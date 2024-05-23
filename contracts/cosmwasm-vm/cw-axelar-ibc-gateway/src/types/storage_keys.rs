@@ -20,6 +20,9 @@ pub enum StorageKey {
     IncomingPackets,
     OutGoingPackets,
     Config,
+    RouterAddress,
+    OutgoingMessages,
+    ChainIdNetid,
 }
 
 impl StorageKey {
@@ -43,6 +46,9 @@ impl StorageKey {
             StorageKey::IncomingPackets => "incoming_packets",
             StorageKey::OutGoingPackets => "outgoing_packets",
             StorageKey::UnClaimedAckFees => "unclaimed_ack_fees",
+            StorageKey::RouterAddress => "router_address",
+            StorageKey::OutgoingMessages => "outgoing_messages",
+            StorageKey::ChainIdNetid => "chainid_netid",
         }
     }
 }

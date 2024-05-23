@@ -45,13 +45,13 @@ impl<'a> CwIbcConnection<'a> {
 
     pub fn call_host_send_message(
         &self,
-        deps: DepsMut,
+        deps: Deps,
         packet: RawPacket,
     ) -> Result<SubMsg, ContractError> {
         let message = cw_common::core_msg::ExecuteMsg::SendPacket {
             packet: HexString::from_bytes(&packet.encode_to_vec()),
         };
-        let ibc_host = self.get_ibc_host(deps.as_ref().storage)?;
+        let ibc_host = self.get_ibc_host(deps.storage)?;
         let submessage = SubMsg {
             id: HOST_SEND_MESSAGE_REPLY_ID,
             msg: CosmosMsg::Wasm(WasmMsg::Execute {
@@ -139,9 +139,9 @@ mod tests {
         let mut deps = mock_dependencies_with_balance(&[coin(100, "ATOM")]);
         let connection = CwIbcConnection::default();
         let store = deps.as_mut().storage;
-        connection
-            .set_xcall_host(store, Addr::unchecked("xcall-address"))
-            .unwrap();
+        // connection
+        //     .set_xcall_host(store, Addr::unchecked("xcall-address"))
+        //     .unwrap();
         connection
             .set_ibc_host(store, Addr::unchecked("ibc-host"))
             .unwrap();
@@ -149,7 +149,7 @@ mod tests {
 
         let packet = RawPacket::default();
 
-        let res = connection.call_host_send_message(deps.as_mut(), packet.clone());
+        let res = connection.call_host_send_message(deps.as_ref(), packet.clone());
         println!("{:?}", res);
         assert!(res.is_ok());
 

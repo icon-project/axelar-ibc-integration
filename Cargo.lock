@@ -10,8 +10,8 @@ dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
  "client",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
  "error-stack",
@@ -60,8 +60,8 @@ version = "0.1.0"
 source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769c41a93891d91aef518828b04e013266a#c2951769c41a93891d91aef518828b04e013266a"
 dependencies = [
  "bs58",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "flagset",
@@ -132,6 +132,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d86b93f97252c47b41663388e6d155714a9d0c398b99f1005cbc5f978b29f445"
 
 [[package]]
+name = "bech32"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d965446196e3b7decd44aa7ee49e31d630118f90ef12f97900f262eb915c951d"
+
+[[package]]
 name = "bincode"
 version = "1.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -169,6 +175,12 @@ name = "bnum"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab9008b6bb9fc80b5277f2fe481c09e828743d9151203e804583eb4c9e15b31d"
+
+[[package]]
+name = "bnum"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56953345e39537a3e18bdaeba4cb0c58a78c1f61f361dc0fa7c5c7340ae87c5f"
 
 [[package]]
 name = "bs58"
@@ -220,7 +232,7 @@ name = "client"
 version = "0.1.0"
 source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769c41a93891d91aef518828b04e013266a#c2951769c41a93891d91aef518828b04e013266a"
 dependencies = [
- "cosmwasm-std",
+ "cosmwasm-std 1.5.2",
  "error-stack",
  "serde",
  "thiserror",
@@ -232,8 +244,8 @@ version = "0.1.0"
 source = "git+https://github.com/icon-project/IBC-Integration.git?branch=main#c277c320238f5955e9243d7860e382a375233a98"
 dependencies = [
  "bytes",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.1.0",
  "debug_print 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more",
@@ -251,7 +263,7 @@ dependencies = [
  "rustc-hex",
  "safe-regex",
  "serde",
- "serde-json-wasm",
+ "serde-json-wasm 0.5.2",
  "serde_json",
  "sha2 0.10.8",
  "sha3",
@@ -266,8 +278,8 @@ version = "0.1.0"
 source = "git+https://github.com/icon-project/IBC-Integration.git#c277c320238f5955e9243d7860e382a375233a98"
 dependencies = [
  "bytes",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.1.0",
  "debug_print 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "derive_more",
@@ -285,7 +297,7 @@ dependencies = [
  "rustc-hex",
  "safe-regex",
  "serde",
- "serde-json-wasm",
+ "serde-json-wasm 0.5.2",
  "serde_json",
  "sha2 0.10.8",
  "sha3",
@@ -307,8 +319,8 @@ source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769
 dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "multisig",
@@ -332,10 +344,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "cosmwasm-crypto"
+version = "2.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6bf91c32ff87ffec3f1a36d03c96a528bc7447b9774c0616e5b092d7a3fd6503"
+dependencies = [
+ "digest 0.10.7",
+ "ed25519-zebra",
+ "k256",
+ "rand_core 0.6.4",
+ "thiserror",
+]
+
+[[package]]
 name = "cosmwasm-derive"
 version = "1.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "242e98e7a231c122e08f300d9db3262d1007b51758a8732cd6210b3e9faa4f3a"
+dependencies = [
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "cosmwasm-derive"
+version = "2.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9125094db6fdf355525d0968d5a2b3a23f82dfc9553efd64942a545ac086eed8"
 dependencies = [
  "syn 1.0.109",
 ]
@@ -346,7 +380,20 @@ version = "1.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7879036156092ad1c22fe0d7316efc5a5eceec2bc3906462a2560215f2a2f929"
 dependencies = [
- "cosmwasm-schema-derive",
+ "cosmwasm-schema-derive 1.5.5",
+ "schemars",
+ "serde",
+ "serde_json",
+ "thiserror",
+]
+
+[[package]]
+name = "cosmwasm-schema"
+version = "2.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d403dea1175a5b20fd2d29dda180fa9f1391dd46f354a8639391d1e549a99e5e"
+dependencies = [
+ "cosmwasm-schema-derive 2.0.3",
  "schemars",
  "serde",
  "serde_json",
@@ -365,22 +412,55 @@ dependencies = [
 ]
 
 [[package]]
+name = "cosmwasm-schema-derive"
+version = "2.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3c3153038e91080ded2e2554689e802be2a34a24c6e49c039ae94810c99a680"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "cosmwasm-std"
 version = "1.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ad011ae7447188e26e4a7dbca2fcd0fc186aa21ae5c86df0503ea44c78f9e469"
 dependencies = [
  "base64 0.21.7",
- "bech32",
- "bnum",
- "cosmwasm-crypto",
- "cosmwasm-derive",
+ "bech32 0.9.1",
+ "bnum 0.8.1",
+ "cosmwasm-crypto 1.5.2",
+ "cosmwasm-derive 1.5.5",
  "derivative",
  "forward_ref",
  "hex",
  "schemars",
  "serde",
- "serde-json-wasm",
+ "serde-json-wasm 0.5.2",
+ "sha2 0.10.8",
+ "static_assertions",
+ "thiserror",
+]
+
+[[package]]
+name = "cosmwasm-std"
+version = "2.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eae364adb252732194283cd06dea3de2a1ed1e97d5033cdfd0fb651daa5a0100"
+dependencies = [
+ "base64 0.21.7",
+ "bech32 0.9.1",
+ "bnum 0.10.0",
+ "cosmwasm-crypto 2.0.3",
+ "cosmwasm-derive 2.0.3",
+ "derivative",
+ "forward_ref",
+ "hex",
+ "schemars",
+ "serde",
+ "serde-json-wasm 1.0.1",
  "sha2 0.10.8",
  "static_assertions",
  "thiserror",
@@ -392,7 +472,7 @@ version = "1.5.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "66de2ab9db04757bcedef2b5984fbe536903ada4a8a9766717a4a71197ef34f6"
 dependencies = [
- "cosmwasm-std",
+ "cosmwasm-std 1.5.2",
  "serde",
 ]
 
@@ -475,12 +555,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "cw-axelar-ibc-connection"
+name = "cw-axelar-ibc-gateway"
 version = "0.1.1"
 dependencies = [
+ "axelar-wasm-std",
  "common 0.1.0 (git+https://github.com/icon-project/IBC-Integration.git)",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cosmwasm-storage",
  "cw-common",
  "cw-storage-plus 1.2.0",
@@ -488,8 +569,11 @@ dependencies = [
  "cw-xcall-lib",
  "cw2 1.1.2",
  "debug_print 1.0.0 (git+https://github.com/RustyNixieTube/debug_print.git?branch=master)",
+ "error-stack",
  "getrandom",
  "hex",
+ "itertools 0.11.0",
+ "router-api",
  "schemars",
  "serde",
  "thiserror",
@@ -501,9 +585,9 @@ version = "0.2.0"
 dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
- "cosmwasm-schema",
- "cosmwasm-std",
- "cw-multi-test",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
+ "cw-multi-test 2.0.1",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "flagset",
@@ -522,11 +606,11 @@ name = "cw-common"
 version = "0.1.1"
 source = "git+https://github.com/icon-project/IBC-Integration.git#c277c320238f5955e9243d7860e382a375233a98"
 dependencies = [
- "bech32",
+ "bech32 0.9.1",
  "bytes",
  "common 0.1.0 (git+https://github.com/icon-project/IBC-Integration.git)",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.1.0",
  "cw-xcall-lib",
  "debug_print 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -536,7 +620,7 @@ dependencies = [
  "prost 0.11.9",
  "schemars",
  "serde",
- "serde-json-wasm",
+ "serde-json-wasm 0.5.2",
  "serde_json",
 ]
 
@@ -547,7 +631,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8e81b4a7821d5eeba0d23f737c16027b39a600742ca8c32eb980895ffd270f4"
 dependencies = [
  "anyhow",
- "cosmwasm-std",
+ "cosmwasm-std 1.5.2",
  "cosmwasm-storage",
  "cw-storage-plus 0.15.1",
  "cw-utils 0.15.1",
@@ -560,12 +644,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-multi-test"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e403ad6ec62c8bcbcb75f7f4940712d0142b6103310da2a9375252b942358caa"
+dependencies = [
+ "anyhow",
+ "bech32 0.11.0",
+ "cosmwasm-std 2.0.3",
+ "cw-storage-plus 2.0.0",
+ "cw-utils 2.0.0",
+ "derivative",
+ "itertools 0.12.1",
+ "prost 0.12.6",
+ "schemars",
+ "serde",
+ "sha2 0.10.8",
+ "thiserror",
+]
+
+[[package]]
 name = "cw-storage-plus"
 version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc6cf70ef7686e2da9ad7b067c5942cd3e88dd9453f7af42f54557f8af300fb0"
 dependencies = [
- "cosmwasm-std",
+ "cosmwasm-std 1.5.2",
  "schemars",
  "serde",
 ]
@@ -575,7 +679,7 @@ name = "cw-storage-plus"
 version = "1.1.0"
 source = "git+https://github.com/icon-project/cw-storage-plus.git?branch=fix-raw#238b520c3e193226143eedb717a3ed76187d11de"
 dependencies = [
- "cosmwasm-std",
+ "cosmwasm-std 1.5.2",
  "schemars",
  "serde",
 ]
@@ -586,7 +690,18 @@ version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d5ff29294ee99373e2cd5fd21786a3c0ced99a52fec2ca347d565489c61b723c"
 dependencies = [
- "cosmwasm-std",
+ "cosmwasm-std 1.5.2",
+ "schemars",
+ "serde",
+]
+
+[[package]]
+name = "cw-storage-plus"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f13360e9007f51998d42b1bc6b7fa0141f74feae61ed5fd1e5b0a89eec7b5de1"
+dependencies = [
+ "cosmwasm-std 2.0.3",
  "schemars",
  "serde",
 ]
@@ -597,8 +712,8 @@ version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ae0b69fa7679de78825b4edeeec045066aa2b2c4b6e063d80042e565bb4da5c"
 dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw2 0.15.1",
  "schemars",
  "semver",
@@ -612,11 +727,24 @@ version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c4a657e5caacc3a0d00ee96ca8618745d050b8f757c709babafb81208d4239c"
 dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw2 1.1.2",
  "schemars",
  "semver",
+ "serde",
+ "thiserror",
+]
+
+[[package]]
+name = "cw-utils"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "07dfee7f12f802431a856984a32bce1cb7da1e6c006b5409e3981035ce562dec"
+dependencies = [
+ "cosmwasm-schema 2.0.3",
+ "cosmwasm-std 2.0.3",
+ "schemars",
  "serde",
  "thiserror",
 ]
@@ -627,8 +755,8 @@ version = "0.1.0"
 source = "git+https://github.com/icon-project/xCall.git?tag=v0.1.0-alpha.5#7f250bc9c6560591ccc16289cb8159dd100bbe76"
 dependencies = [
  "common 0.1.0 (git+https://github.com/icon-project/IBC-Integration.git?branch=main)",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cosmwasm-storage",
  "cw-storage-plus 1.1.0",
  "cw-xcall-lib",
@@ -644,8 +772,8 @@ name = "cw-xcall-lib"
 version = "0.1.0"
 source = "git+https://github.com/icon-project/xCall.git?tag=v0.1.0-alpha.5#7f250bc9c6560591ccc16289cb8159dd100bbe76"
 dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cosmwasm-storage",
  "cw-storage-plus 1.1.0",
  "cw2 1.1.2",
@@ -661,8 +789,8 @@ version = "0.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5abb8ecea72e09afff830252963cb60faf945ce6cef2c20a43814516082653da"
 dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 0.15.1",
  "schemars",
  "serde",
@@ -674,8 +802,8 @@ version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c6c120b24fbbf5c3bedebb97f2cc85fbfa1c3287e09223428e7e597b5293c1fa"
 dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "schemars",
  "semver",
@@ -1095,8 +1223,8 @@ dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
  "client",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "gateway-api",
@@ -1113,7 +1241,7 @@ name = "gateway-api"
 version = "0.1.0"
 source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769c41a93891d91aef518828b04e013266a#c2951769c41a93891d91aef518828b04e013266a"
 dependencies = [
- "cosmwasm-schema",
+ "cosmwasm-schema 1.5.5",
  "router-api",
 ]
 
@@ -1264,8 +1392,8 @@ source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769
 dependencies = [
  "axelar-wasm-std",
  "coordinator",
- "cosmwasm-std",
- "cw-multi-test",
+ "cosmwasm-std 1.5.2",
+ "cw-multi-test 0.15.1",
  "error-stack",
  "gateway",
  "gateway-api",
@@ -1298,6 +1426,15 @@ name = "itertools"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1c173a5686ce8bfa551b3563d0c2170bf24ca44da99c7ca4bfdab5418c3fe57"
+dependencies = [
+ "either",
+]
+
+[[package]]
+name = "itertools"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba291022dbbd398a455acf126c1e341954079855bc60dfdda641363bd6922569"
 dependencies = [
  "either",
 ]
@@ -1401,9 +1538,9 @@ source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769
 dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
- "cosmwasm-crypto",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-crypto 1.5.2",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "ed25519-dalek",
  "enum-display-derive",
@@ -1429,8 +1566,8 @@ dependencies = [
  "axelar-wasm-std-derive",
  "bcs",
  "coordinator",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "cw-utils 1.0.3",
  "error-stack",
@@ -1655,6 +1792,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "prost"
+version = "0.12.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "deb1435c188b76130da55f17a466d252ff7b1418b2ad3e037d127b94e3411f29"
+dependencies = [
+ "bytes",
+ "prost-derive 0.12.6",
+]
+
+[[package]]
 name = "prost-build"
 version = "0.11.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1700,6 +1847,19 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "prost-derive"
+version = "0.12.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "81bddcdb20abf9501610992b6759a4c888aef7d1a7247ef75e2404275ac24af1"
+dependencies = [
+ "anyhow",
+ "itertools 0.11.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.65",
 ]
 
 [[package]]
@@ -1804,8 +1964,8 @@ source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769
 dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "itertools 0.11.0",
@@ -1851,8 +2011,8 @@ source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769
 dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "flagset",
@@ -1870,8 +2030,8 @@ source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769
 dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "flagset",
@@ -2034,6 +2194,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde-json-wasm"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f05da0d153dd4595bdffd5099dc0e9ce425b205ee648eb93437ff7302af8c9a5"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "serde_bytes"
 version = "0.11.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2093,8 +2262,8 @@ source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769
 dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "report",
@@ -2169,8 +2338,8 @@ name = "signature-verifier-api"
 version = "0.1.0"
 source = "git+https://github.com/axelarnetwork/axelar-amplifier.git?rev=c2951769c41a93891d91aef518828b04e013266a#c2951769c41a93891d91aef518828b04e013266a"
 dependencies = [
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "error-stack",
  "thiserror",
 ]
@@ -2468,8 +2637,8 @@ dependencies = [
  "axelar-wasm-std",
  "axelar-wasm-std-derive",
  "client",
- "cosmwasm-schema",
- "cosmwasm-std",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
  "cw-storage-plus 1.2.0",
  "error-stack",
  "report",

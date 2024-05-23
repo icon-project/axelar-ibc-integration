@@ -1,10 +1,10 @@
 pub mod ack;
 pub mod admin;
 pub mod assertion;
+pub mod axelar;
 pub mod check;
 pub mod contract;
 pub mod error;
-pub mod fee;
 pub mod ibc;
 pub mod ibc_host;
 pub mod msg;
@@ -13,7 +13,6 @@ pub mod receive_packet;
 pub mod send_message;
 pub mod state;
 pub mod types;
-
 
 use crate::{
     ack::make_ack_fail,
@@ -39,7 +38,7 @@ use cw_common::cw_types::{
     CwPacketReceiveMsg, CwPacketTimeoutMsg, CwReceiveResponse,
 };
 
-use cw_common::xcall_connection_msg::{ExecuteMsg, QueryMsg};
+use crate::msg::{ExecuteMsg, QueryMsg};
 use cw_storage_plus::Item;
 use thiserror::Error;
 

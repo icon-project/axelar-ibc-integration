@@ -47,7 +47,7 @@ report = { workspace = true }
 router-api = { workspace = true }
 
 [dev-dependencies]
-cw-multi-test = "0.15.1"
+cw-multi-test = "2.0.0"
 hex = { version = "0.4.3", default-features = false }
 integration-tests = { workspace = true }
 rand = "0.8.5"

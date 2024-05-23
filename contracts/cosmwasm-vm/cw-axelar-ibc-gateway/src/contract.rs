@@ -2,11 +2,12 @@ use common::{
     ibc::{core::ics04_channel::channel::State, Height},
     rlp::{self},
 };
-use cosmwasm_std::{coins, BankMsg, IbcChannel};
+use cosmwasm_std::{coins, to_json_binary, BankMsg, IbcChannel};
 use cw_common::raw_types::channel::RawPacket;
 use cw_xcall_lib::network_address::NetId;
 
 use cw_common::cw_println;
+use router_api::{client::Router, Message};
 
 use super::*;
 use crate::{
@@ -16,7 +17,7 @@ use crate::{
     },
     types::{
         channel_config::ChannelConfig, config::Config, config_response::to_config_response,
-        connection_config::ConnectionConfig, message::Message, LOG_PREFIX,
+        connection_config::ConnectionConfig, LOG_PREFIX,
     },
 };
 
@@ -99,18 +100,6 @@ impl<'a> CwIbcConnection<'a> {
                     CwIbcConnection::validate_address(deps.api, address.as_str())?;
                 self.update_admin(deps.storage, validated_address)
             }
-            ExecuteMsg::SendMessage { to, sn, msg } => {
-                println!("{LOG_PREFIX} Received Payload From XCall App");
-                // return Ok(Response::new());
-                self.send_message(deps, info, env, to, sn, msg)
-            }
-            ExecuteMsg::SetXCallHost { address } => {
-                self.ensure_admin(deps.as_ref().storage, info.sender)?;
-                let validated_address =
-                    CwIbcConnection::validate_address(deps.api, address.as_str())?;
-                self.set_xcall_host(deps.storage, validated_address)?;
-                Ok(Response::new())
-            }
             ExecuteMsg::ConfigureConnection {
                 connection_id,
                 counterparty_port_id,
@@ -119,6 +108,7 @@ impl<'a> CwIbcConnection<'a> {
                 timeout_height,
             } => {
                 self.ensure_admin(deps.as_ref().storage, info.sender)?;
+
                 self.configure_connection(
                     deps,
                     connection_id,
@@ -147,17 +137,15 @@ impl<'a> CwIbcConnection<'a> {
                 )?;
                 Ok(Response::new())
             }
-            ExecuteMsg::ClaimFees { nid, address } => {
-                let fee_msg = self.claim_fees(deps, info, nid, address)?;
-                Ok(Response::new().add_submessage(fee_msg))
-            }
-            ExecuteMsg::SetFees {
-                nid,
-                packet_fee,
-                ack_fee,
-            } => {
-                self.ensure_admin(deps.as_ref().storage, info.sender)?;
-                self.set_fee(deps.storage, nid, packet_fee, ack_fee)
+
+            ExecuteMsg::RouteMessages(msgs) => {
+                let router_address = self.router().load(deps.storage)?;
+
+                if info.sender != router_address {
+                    return Err(ContractError::IBCIncomingOnly);
+                }
+                axelar::execute::route_outgoing_messages(deps, msgs)?;
+                Ok(Response::new())
             }
             #[cfg(not(feature = "native_ibc"))]
             ExecuteMsg::IbcChannelOpen { msg } => {
@@ -228,16 +216,6 @@ impl<'a> CwIbcConnection<'a> {
             QueryMsg::GetTimeoutHeight { channel_id } => {
                 let config = self.get_channel_config(deps.storage, &channel_id).unwrap();
                 to_binary(&config.timeout_height)
-            }
-            QueryMsg::GetFee { nid, response } => {
-                let fees = self.get_network_fees(deps.storage, nid);
-                if response {
-                    return to_binary(&(fees.send_packet_fee + fees.ack_fee));
-                }
-                to_binary(&(fees.send_packet_fee))
-            }
-            QueryMsg::GetUnclaimedFee { nid, relayer } => {
-                to_binary(&self.get_unclaimed_fee(deps.storage, nid, relayer))
             }
             QueryMsg::GetIbcConfig { nid } => {
                 let ibc_config = self.get_ibc_config(deps.storage, &nid).unwrap();
@@ -326,7 +304,8 @@ impl<'a> CwIbcConnection<'a> {
         self.update_admin(store, owner)?;
         // self.set_timeout_height(store, msg.timeout_height)?;
         self.set_ibc_host(store, msg.ibc_host.clone())?;
-        self.set_xcall_host(store, msg.xcall_address)?;
+        // self.set_xcall_host(store, msg.xcall_address)?;
+        self.set_router(store, msg.router_address)?;
         let config = Config {
             port_id: msg.port_id,
             denom: msg.denom,
@@ -575,18 +554,18 @@ impl<'a> CwIbcConnection<'a> {
         let channel_config = self.get_channel_config(deps.as_ref().storage, &channel)?;
         let nid = channel_config.counterparty_nid;
 
-       // let submsg = self.call_xcall_handle_message(deps.storage, &nid, acknowledgement.data.0)?;
+        // let submsg = self.call_xcall_handle_message(deps.storage, &nid, acknowledgement.data.0)?;
 
-        let bank_msg = self.settle_unclaimed_ack_fee(
-            deps.storage,
-            nid.as_str(),
-            seq,
-            ack.relayer.to_string(),
-        )?;
+        // let bank_msg = self.settle_unclaimed_ack_fee(
+        //     deps.storage,
+        //     nid.as_str(),
+        //     seq,
+        //     ack.relayer.to_string(),
+        // )?;
 
-        Ok(Response::new()
-            .add_messages(bank_msg))
-            //.add_submessage(submsg))
+        //  Ok(Response::new().add_messages(bank_msg))
+        //.add_submessage(submsg))
+        Ok(Response::new())
     }
     /// This function handles a timeout event for an IBC packet and sends a reply message with an error
     /// code.
@@ -611,51 +590,51 @@ impl<'a> CwIbcConnection<'a> {
     ) -> Result<Response, ContractError> {
         let packet = msg.packet;
 
-        let n_message: Message = rlp::decode(&packet.data).unwrap();
+        // let n_message: Message = rlp::decode(&packet.data).unwrap();
 
-        if n_message.sn.is_none() {
-            return Ok(Response::new());
-        }
+        // if n_message.sn.is_none() {
+        //     return Ok(Response::new());
+        // }
 
-        let channel_id = packet.src.channel_id.clone();
-        let channel_config = self.get_channel_config(deps.as_ref().storage, &channel_id)?;
-        let nid = channel_config.counterparty_nid;
+        // let channel_id = packet.src.channel_id.clone();
+        // let channel_config = self.get_channel_config(deps.as_ref().storage, &channel_id)?;
+        // let nid = channel_config.counterparty_nid;
 
-        self.add_unclaimed_ack_fees(deps.storage, &nid, packet.sequence, n_message.fee)?;
-       // let submsg = self.call_xcall_handle_error(deps.storage, n_message.sn.0.unwrap())?;
-        let bank_msg = self.settle_unclaimed_ack_fee(
-            deps.storage,
-            nid.as_str(),
-            packet.sequence,
-            msg.relayer.to_string(),
-        )?;
+        // self.add_unclaimed_ack_fees(deps.storage, &nid, packet.sequence, n_message.fee)?;
+        // // let submsg = self.call_xcall_handle_error(deps.storage, n_message.sn.0.unwrap())?;
+        // let bank_msg = self.settle_unclaimed_ack_fee(
+        //     deps.storage,
+        //     nid.as_str(),
+        //     packet.sequence,
+        //     msg.relayer.to_string(),
+        // )?;
 
-        Ok(Response::new()
-            .add_messages(bank_msg))
-           // .add_submessage(submsg))
+        // Ok(Response::new().add_messages(bank_msg))
+        // .add_submessage(submsg))
+        Ok(Response::new())
     }
 
-    pub fn settle_unclaimed_ack_fee(
-        &self,
-        store: &mut dyn Storage,
-        nid: &str,
-        seq: u64,
-        relayer: String,
-    ) -> Result<Vec<BankMsg>, ContractError> {
-        let ack_fee = self.get_unclaimed_ack_fee(store, nid, seq);
-        if ack_fee == 0 {
-            return Ok(vec![]);
-        }
-        self.reset_unclaimed_ack_fees(store, nid, seq)?;
-        let denom = self.get_denom(store)?;
+    // pub fn settle_unclaimed_ack_fee(
+    //     &self,
+    //     store: &mut dyn Storage,
+    //     nid: &str,
+    //     seq: u64,
+    //     relayer: String,
+    // ) -> Result<Vec<BankMsg>, ContractError> {
+    //     let ack_fee = self.get_unclaimed_ack_fee(store, nid, seq);
+    //     if ack_fee == 0 {
+    //         return Ok(vec![]);
+    //     }
+    //     self.reset_unclaimed_ack_fees(store, nid, seq)?;
+    //     let denom = self.get_denom(store)?;
 
-        let msg = BankMsg::Send {
-            to_address: relayer,
-            amount: coins(ack_fee, denom),
-        };
+    //     let msg = BankMsg::Send {
+    //         to_address: relayer,
+    //         amount: coins(ack_fee, denom),
+    //     };
 
-        Ok(vec![msg])
-    }
+    //     Ok(vec![msg])
+    // }
 
     pub fn setup_channel(
         &mut self,
@@ -775,12 +754,12 @@ impl<'a> CwIbcConnection<'a> {
         Ok(())
     }
 
-    pub fn create_packet<T: common::rlp::Encodable>(
+    pub fn create_packet(
         &self,
         ibc_config: IbcConfig,
         timeout_height: Height,
         sequence_no: u64,
-        data: T,
+        data: Message,
     ) -> RawPacket {
         let packet = RawPacket {
             sequence: sequence_no,
@@ -788,7 +767,7 @@ impl<'a> CwIbcConnection<'a> {
             source_channel: ibc_config.src_endpoint().channel_id.clone(),
             destination_port: ibc_config.dst_endpoint().port_id.clone(),
             destination_channel: ibc_config.dst_endpoint().channel_id.clone(),
-            data: rlp::encode(&data).to_vec(),
+            data: to_json_binary(&data).unwrap().to_vec(),
             timeout_height: Some(timeout_height.into()),
             timeout_timestamp: 0,
         };

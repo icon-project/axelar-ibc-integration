@@ -1,3 +1,5 @@
+use router_api::CrossChainId;
+
 use super::*;
 
 #[derive(Error, Debug)]
@@ -53,4 +55,19 @@ pub enum ContractError {
     InvalidPortId,
     #[error("InsufficientFunds")]
     InsufficientFunds,
+    // axelar error
+    #[error("gateway contract config is missing")]
+    ConfigMissing,
+    #[error("invalid store access")]
+    InvalidStoreAccess,
+    #[error("failed to serialize the response")]
+    SerializeResponse,
+    #[error("batch contains duplicate message ids")]
+    DuplicateMessageIds,
+    #[error("failed to query message status")]
+    MessageStatus,
+    #[error("message with ID {0} not found")]
+    MessageNotFound(CrossChainId),
+    #[error("IBCIncomingOnly")]
+    IBCIncomingOnly,
 }

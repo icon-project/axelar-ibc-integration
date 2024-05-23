@@ -1,85 +1,38 @@
 use common::rlp::Nullable;
-use cosmwasm_std::{Coin, DepsMut, Env, MessageInfo, Response, Storage, Uint128};
+use cosmwasm_std::{Coin, Deps, DepsMut, Env, MessageInfo, Response, Storage, Uint128};
 use cw_xcall_lib::network_address::NetId;
+use router_api::Message;
 
 use crate::{
     error::ContractError,
     state::{CwIbcConnection, IbcConfig},
-    types::{message::Message, LOG_PREFIX},
+    types::LOG_PREFIX,
 };
 
 impl<'a> CwIbcConnection<'a> {
     pub fn send_message(
         &self,
-        deps: DepsMut,
-        info: MessageInfo,
-        _env: Env,
+        deps: Deps,
         nid: NetId,
-        sn: i64,
-        message: Vec<u8>,
+        messages: Message,
     ) -> Result<Response, ContractError> {
-        self.ensure_xcall_handler(deps.as_ref().storage, info.sender)?;
-
         println!("{LOG_PREFIX} Packet Validated");
-        let ibc_config = self.get_ibc_config(deps.as_ref().storage, &nid)?;
+        let ibc_config = self.get_ibc_config(deps.storage, &nid)?;
 
-        if sn < 0 {
-            return self.write_acknowledgement(deps.storage, &ibc_config, message, -sn);
-        }
-
-        let sequence_number_host = self.query_host_sequence_no(deps.as_ref(), &ibc_config)?;
-        let network_fee = self.get_network_fees(deps.as_ref().storage, nid.clone());
-        let mut total_fee = network_fee.send_packet_fee;
-
-        if sn > 0 {
-            total_fee += network_fee.ack_fee;
-            self.add_unclaimed_ack_fees(
-                deps.storage,
-                &nid,
-                sequence_number_host,
-                network_fee.ack_fee,
-            )?;
-        }
-        let config = self.get_config(deps.storage)?;
-
-        let fund = get_amount_for_denom(&info.funds, config.denom);
-
-        if fund < total_fee.into() {
-            return Err(ContractError::InsufficientFunds {});
-        }
+        let sequence_number_host = self.query_host_sequence_no(deps, &ibc_config)?;
 
         let timeout_height =
-            self.query_timeout_height(deps.as_ref(), &ibc_config.src_endpoint().channel_id)?;
-        let msg = Message {
-            sn: Nullable::new(Some(sn)),
-            fee: network_fee.send_packet_fee,
-            data: message,
-        };
+            self.query_timeout_height(deps, &ibc_config.src_endpoint().channel_id)?;
 
-        #[cfg(feature = "native_ibc")]
-        {
-            let packet = self.create_request_packet(deps, env, timeout_height, msg.clone())?;
+        let packet_data =
+            self.create_packet(ibc_config, timeout_height, sequence_number_host, messages);
 
-            let submessage: SubMsg<Empty> =
-                SubMsg::reply_always(CosmosMsg::Ibc(packet), HOST_FORWARD_REPLY_ID);
+        println!("{} Raw Packet Created {:?}", LOG_PREFIX, &packet_data);
 
-            Ok(Response::new()
-                .add_submessage(submessage)
-                .add_attribute("method", "send_message"))
-        }
-
-        #[cfg(not(feature = "native_ibc"))]
-        {
-            let packet_data =
-                self.create_packet(ibc_config, timeout_height, sequence_number_host, msg);
-
-            println!("{} Raw Packet Created {:?}", LOG_PREFIX, &packet_data);
-
-            let submessage = self.call_host_send_message(deps, packet_data)?;
-            Ok(Response::new()
-                .add_submessage(submessage)
-                .add_attribute("method", "send_message"))
-        }
+        let submessage = self.call_host_send_message(deps, packet_data)?;
+        Ok(Response::new()
+            .add_submessage(submessage)
+            .add_attribute("method", "send_message"))
     }
 
     fn write_acknowledgement(

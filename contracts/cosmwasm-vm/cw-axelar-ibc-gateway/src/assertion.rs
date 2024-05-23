@@ -131,19 +131,19 @@ impl<'a> CwIbcConnection<'a> {
         Ok(())
     }
 
-    pub fn ensure_xcall_handler(
-        &self,
-        store: &dyn Storage,
-        address: Addr,
-    ) -> Result<(), ContractError> {
-        let ibc_host = self.get_xcall_host(store)?;
+    // pub fn ensure_xcall_handler(
+    //     &self,
+    //     store: &dyn Storage,
+    //     address: Addr,
+    // ) -> Result<(), ContractError> {
+    //     let ibc_host = self.get_xcall_host(store)?;
 
-        if ibc_host != address {
-            println!("{LOG_PREFIX} Invalid Xcall Handler ");
-            return Err(ContractError::OnlyIbcHandler {});
-        }
-        Ok(())
-    }
+    //     if ibc_host != address {
+    //         println!("{LOG_PREFIX} Invalid Xcall Handler ");
+    //         return Err(ContractError::OnlyIbcHandler {});
+    //     }
+    //     Ok(())
+    // }
 }
 
 #[cfg(test)]
@@ -216,20 +216,20 @@ mod test {
         contract.ensure_owner(deps.as_ref().storage, &info).unwrap();
     }
 
-    #[test]
-    #[should_panic(expected = "OnlyIbcHandler")]
-    fn test_ensure_xcall_handler_fail() {
-        let mut deps = mock_dependencies();
-        let contract = CwIbcConnection::new();
+    // #[test]
+    // #[should_panic(expected = "OnlyIbcHandler")]
+    // fn test_ensure_xcall_handler_fail() {
+    //     let mut deps = mock_dependencies();
+    //     let contract = CwIbcConnection::new();
 
-        contract
-            .set_xcall_host(deps.as_mut().storage, Addr::unchecked("xcall_host"))
-            .unwrap();
+    //     contract
+    //         .set_xcall_host(deps.as_mut().storage, Addr::unchecked("xcall_host"))
+    //         .unwrap();
 
-        contract
-            .ensure_xcall_handler(deps.as_ref().storage, Addr::unchecked("ibc_host"))
-            .unwrap()
-    }
+    //     contract
+    //         .ensure_xcall_handler(deps.as_ref().storage, Addr::unchecked("ibc_host"))
+    //         .unwrap()
+    // }
 
     #[test]
     #[should_panic(expected = "OnlyIbcHandler")]

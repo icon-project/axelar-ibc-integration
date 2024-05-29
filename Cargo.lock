@@ -602,6 +602,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "cw-axelar-verifier"
+version = "0.2.0"
+dependencies = [
+ "axelar-wasm-std",
+ "axelar-wasm-std-derive",
+ "client",
+ "cosmwasm-schema 1.5.5",
+ "cosmwasm-std 1.5.2",
+ "cw-multi-test 0.15.1",
+ "cw-storage-plus 1.2.0",
+ "error-stack",
+ "integration-tests",
+ "report",
+ "rewards",
+ "router-api",
+ "serde_json",
+ "service-registry",
+ "thiserror",
+]
+
+[[package]]
 name = "cw-common"
 version = "0.1.1"
 source = "git+https://github.com/icon-project/IBC-Integration.git#c277c320238f5955e9243d7860e382a375233a98"

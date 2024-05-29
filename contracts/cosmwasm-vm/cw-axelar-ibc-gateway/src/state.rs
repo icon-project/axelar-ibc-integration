@@ -132,6 +132,7 @@ pub struct CwIbcConnection<'a> {
     incoming_packets: Map<'a, (String, i64), CwPacket>,
     outgoing_packets: Map<'a, (String, u64), i64>,
     router_address: Item<'a, Addr>,
+    verifier_address: Item<'a, Addr>,
     outgoing_messages: Map<'a, CrossChainId, Message>,
     chainid_netid: Map<'a, CrossChainId, String>,
 }
@@ -160,6 +161,7 @@ impl<'a> CwIbcConnection<'a> {
             incoming_packets: Map::new(StorageKey::IncomingPackets.as_str()),
             outgoing_packets: Map::new(StorageKey::OutGoingPackets.as_str()),
             router_address: Item::new(StorageKey::RouterAddress.as_str()),
+            verifier_address:Item::new(StorageKey::VerifierAddress.as_str()),
             outgoing_messages: Map::new(StorageKey::OutgoingMessages.as_str()),
             chainid_netid: Map::new(StorageKey::ChainIdNetid.as_str()),
         }
@@ -177,11 +179,22 @@ impl<'a> CwIbcConnection<'a> {
         &self.router_address
     }
 
+    pub fn verifier(&self) -> &Item<'a, Addr> {
+        &self.verifier_address
+    }
+
     pub fn set_router(&self, store: &mut dyn Storage, address: Addr) -> Result<(), ContractError> {
         self.router_address
             .save(store, &address)
             .map_err(ContractError::Std)
     }
+
+    pub fn set_verifier(&self, store: &mut dyn Storage, address: Addr) -> Result<(), ContractError> {
+        self.verifier_address
+            .save(store, &address)
+            .map_err(ContractError::Std)
+    }
+
 
     pub fn get_config(&self, store: &dyn Storage) -> Result<Config, ContractError> {
         self.config.load(store).map_err(ContractError::Std)

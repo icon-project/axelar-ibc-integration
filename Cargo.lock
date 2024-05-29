@@ -558,11 +558,14 @@ dependencies = [
 name = "cw-axelar-ibc-gateway"
 version = "0.1.1"
 dependencies = [
+ "aggregate-verifier",
  "axelar-wasm-std",
+ "client",
  "common 0.1.0 (git+https://github.com/icon-project/IBC-Integration.git)",
  "cosmwasm-schema 1.5.5",
  "cosmwasm-std 1.5.2",
  "cosmwasm-storage",
+ "cw-axelar-verifier",
  "cw-common",
  "cw-storage-plus 1.2.0",
  "cw-xcall",

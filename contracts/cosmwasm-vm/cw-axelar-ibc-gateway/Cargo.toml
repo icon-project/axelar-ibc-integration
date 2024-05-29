@@ -48,6 +48,9 @@ debug_print={workspace=true}
 cw-xcall-lib={workspace=true}
 cw-xcall = {workspace=true}
 router-api={workspace=true}
+client = { workspace = true }
+aggregate-verifier={workspace=true}
+cw-axelar-verifier={path="../cw-axelar-verifier",features = ["library"]}
 
 
 

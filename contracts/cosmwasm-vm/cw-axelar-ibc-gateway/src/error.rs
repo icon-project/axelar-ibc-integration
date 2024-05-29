@@ -2,7 +2,7 @@ use router_api::CrossChainId;
 
 use super::*;
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum ContractError {
     #[error("{0}")]
     Std(#[from] StdError),

@@ -6,7 +6,7 @@ use axelar_wasm_std::{
 use cosmwasm_std::Deps;
 use router_api::{CrossChainId, Message};
 
-use crate::state::{self, Poll, PollContent, POLLS, POLL_MESSAGES, POLL_WORKER_SETS};
+use crate::state::{self, Poll, PollContent, IBC_MESSAGES, POLLS, POLL_MESSAGES, POLL_WORKER_SETS};
 use crate::{error::ContractError, state::CONFIG};
 
 pub fn voting_threshold(deps: Deps) -> Result<MajorityThreshold, ContractError> {
@@ -20,7 +20,7 @@ pub fn messages_status(
     messages
         .iter()
         .map(|message| {
-            message_status(deps, message).map(|status| (message.cc_id.to_owned(), status))
+            ibc_message_status(deps, message).map(|status| (message.cc_id.to_owned(), status))
         })
         .collect::<Result<Vec<_>, _>>()
 }
@@ -31,6 +31,16 @@ pub fn message_status(deps: Deps, message: &Message) -> Result<VerificationStatu
     let loaded_poll_content = POLL_MESSAGES.may_load(deps.storage, &message.hash())?;
 
     Ok(verification_status(deps, loaded_poll_content, message))
+}
+
+pub fn ibc_message_status(deps: Deps, message: &Message) -> Result<VerificationStatus, ContractError> {
+    let msg = IBC_MESSAGES.may_load(deps.storage, &message.hash())?;
+
+    let status=match msg {
+        Some(_) => VerificationStatus::SucceededOnChain,
+        None => VerificationStatus::NotFound,
+    };
+    Ok(status)
 }
 
 pub fn worker_set_status(

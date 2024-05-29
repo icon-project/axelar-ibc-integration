@@ -18,18 +18,31 @@ pub mod execute {
     // }
 
     pub(crate) fn route_incoming_messages(
+        verifier: &aggregate_verifier::Client,
         router: &Router,
         msgs: Vec<Message>,
     ) -> Result<Response, ContractError> {
-        check_for_duplicates(msgs)?.then(|msgs| {
-            let mut vec: Vec<(VerificationStatus, Vec<Message>)> = Vec::new();
-            vec.push((VerificationStatus::SucceededOnChain, msgs));
-            return route(router, vec)
-                .then(|(msgs, events)| Response::new().add_messages(msgs).add_events(events))
-                .then(Ok);
+        apply(verifier, msgs, |msgs_by_status| {
+            route(router, msgs_by_status)
         })
     }
 
+    fn apply(
+        verifier: &aggregate_verifier::Client,
+        msgs: Vec<Message>,
+        action: impl Fn(Vec<(VerificationStatus, Vec<Message>)>) -> (Option<WasmMsg>, Vec<Event>),
+    ) -> Result<Response, ContractError> {
+       let status= check_for_duplicates(msgs)?
+            .then(|msgs| verifier.messages_status(msgs)).map(|r|{
+                r.collect::<Vec<(Message,VerificationStatus)>>()
+            }).unwrap();
+           
+            status.into_iter().then(group_by_status)
+            .then(action)
+            .then(|(msgs, events)| Response::new().add_messages(msgs).add_events(events))
+            .then(Ok)
+    }
+   
     // because the messages came from the router, we can assume they are already verified
     pub(crate) fn route_outgoing_messages(
         deps: DepsMut,
@@ -64,17 +77,17 @@ pub mod execute {
         Ok(msgs)
     }
 
-    // fn group_by_status(
-    //     msgs_with_status: impl Iterator<Item = (Message, VerificationStatus)>,
-    // ) -> Vec<(VerificationStatus, Vec<Message>)> {
-    //     msgs_with_status
-    //         .map(|(msg, status)| (status, msg))
-    //         .into_group_map()
-    //         .into_iter()
-    //         // sort by verification status so the order of messages is deterministic
-    //         .sorted_by_key(|(status, _)| *status)
-    //         .collect()
-    // }
+    fn group_by_status(
+        msgs_with_status: impl Iterator<Item = (Message, VerificationStatus)>,
+    ) -> Vec<(VerificationStatus, Vec<Message>)> {
+        msgs_with_status
+            .map(|(msg, status)| (status, msg))
+            .into_group_map()
+            .into_iter()
+            // sort by verification status so the order of messages is deterministic
+            .sorted_by_key(|(status, _)| *status)
+            .collect()
+    }
 
     // fn verify(
     //     verifier: &aggregate_verifier::Client,

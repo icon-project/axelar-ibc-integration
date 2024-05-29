@@ -1,3 +1,4 @@
+use client::Client;
 use common::{
     ibc::{core::ics04_channel::channel::State, Height},
     rlp::{self},
@@ -140,11 +141,17 @@ impl<'a> CwIbcConnection<'a> {
 
             ExecuteMsg::RouteMessages(msgs) => {
                 let router_address = self.router().load(deps.storage)?;
+                let verifier_address = self.verifier().load(deps.storage)?;
+                let verifier: aggregate_verifier::Client = Client::new(deps.querier, verifier_address).into();
 
-                if info.sender != router_address {
-                    return Err(ContractError::IBCIncomingOnly);
+                if info.sender == router_address {
+                    axelar::execute::route_outgoing_messages(deps, msgs)?;
+                } else {
+                    let router = Router {
+                        address: router_address,
+                    };
+                    axelar::execute::route_incoming_messages(&verifier, &router, msgs)?;
                 }
-                axelar::execute::route_outgoing_messages(deps, msgs)?;
                 Ok(Response::new())
             }
             #[cfg(not(feature = "native_ibc"))]
@@ -306,6 +313,8 @@ impl<'a> CwIbcConnection<'a> {
         self.set_ibc_host(store, msg.ibc_host.clone())?;
         // self.set_xcall_host(store, msg.xcall_address)?;
         self.set_router(store, msg.router_address)?;
+        self.set_verifier(store, msg.verifier_address)?;
+        
         let config = Config {
             port_id: msg.port_id,
             denom: msg.denom,

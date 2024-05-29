@@ -8,6 +8,7 @@ use cw_common::raw_types::channel::RawChannel;
 use cw_common::{hex_string::HexString, raw_types::channel::RawPacket, ProstMessage};
 
 use cw_common::cw_println;
+use router_api::Message;
 
 use crate::{
     error::ContractError,
@@ -38,6 +39,30 @@ impl<'a> CwIbcConnection<'a> {
             msg: cosm_msg,
             gas_limit: None,
             reply_on: cosmwasm_std::ReplyOn::Always,
+        };
+
+        Ok(submessage)
+    }
+
+    pub fn call_save_ibc_messages(
+        &self,
+        store: &dyn Storage,
+        messages: Vec<Message>,
+    ) -> Result<SubMsg, ContractError> {
+        let verifier = self.verifier().load(store)?;
+
+        let message = cw_axelar_verifier::msg::ExecuteMsg::SaveIbcMessages { messages: messages };
+
+        let cosm_msg = CosmosMsg::Wasm(cosmwasm_std::WasmMsg::Execute {
+            contract_addr: verifier.to_string(),
+            msg: to_binary(&message).map_err(ContractError::Std)?,
+            funds: vec![],
+        });
+        let submessage = SubMsg {
+            id: HOST_WRITE_ACKNOWLEDGEMENT_REPLY_ID,
+            msg: cosm_msg,
+            gas_limit: None,
+            reply_on: cosmwasm_std::ReplyOn::Never,
         };
 
         Ok(submessage)

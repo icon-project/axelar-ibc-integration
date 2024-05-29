@@ -21,6 +21,7 @@ pub enum StorageKey {
     OutGoingPackets,
     Config,
     RouterAddress,
+    VerifierAddress,
     OutgoingMessages,
     ChainIdNetid,
 }
@@ -47,6 +48,7 @@ impl StorageKey {
             StorageKey::OutGoingPackets => "outgoing_packets",
             StorageKey::UnClaimedAckFees => "unclaimed_ack_fees",
             StorageKey::RouterAddress => "router_address",
+            StorageKey::VerifierAddress => "verifier_address",
             StorageKey::OutgoingMessages => "outgoing_messages",
             StorageKey::ChainIdNetid => "chainid_netid",
         }

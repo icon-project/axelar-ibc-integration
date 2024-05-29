@@ -50,6 +50,7 @@ gateway-api = { version = "^0.1.0",  git="https://github.com/axelarnetwork/axela
 client = { version = "^0.1.0", git="https://github.com/axelarnetwork/axelar-amplifier.git",rev="c2951769c41a93891d91aef518828b04e013266a" }
 rewards = { version = "^0.2.0", git="https://github.com/axelarnetwork/axelar-amplifier.git",rev="c2951769c41a93891d91aef518828b04e013266a" }
 service-registry = { version = "^0.2.0", git="https://github.com/axelarnetwork/axelar-amplifier.git",rev="c2951769c41a93891d91aef518828b04e013266a" }
+aggregate-verifier = { version = "^0.1.1", git="https://github.com/axelarnetwork/axelar-amplifier.git",rev="c2951769c41a93891d91aef518828b04e013266a" }
 itertools = "0.11.0"
 report = { version = "^0.1.0", git="https://github.com/axelarnetwork/axelar-amplifier.git",rev="c2951769c41a93891d91aef518828b04e013266a" }
 router-api = { version = "^0.1.0", git="https://github.com/axelarnetwork/axelar-amplifier.git",rev="c2951769c41a93891d91aef518828b04e013266a" }

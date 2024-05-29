@@ -17,6 +17,7 @@ pub struct InstantiateMsg {
     pub port_id: String,
     pub xcall_address: Addr,
     pub router_address: Addr,
+    pub verifier_address:Addr,
     pub denom: String,
 }
 
